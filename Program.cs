@@ -1,3 +1,5 @@
+using Microsoft.EntityFrameworkCore;
+using shortenUrl.Data;
 using shortenUrl.DI;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -12,6 +14,12 @@ builder.Services.AddSwaggerGen();
 DependencyInjection.Configure(builder.Services, builder.Configuration);
 
 var app = builder.Build();
+
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<ShortUrlContext>();
+    db.Database.Migrate();
+}
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
