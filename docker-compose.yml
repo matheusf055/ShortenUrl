@@ -1,0 +1,29 @@
+version: '3.8'
+
+services:
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: sqlserver
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=shortenUrl!  
+    ports:
+      - "1433:1433"
+    networks:
+      - app-network
+
+  shortenurl:
+    build: .
+    container_name: shortenurl
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__DefaultConnection=Server=sqlserver,1433;Database=shortenurl;User Id=sa;Password=shortenUrl!;TrustServerCertificate=True
+    depends_on:
+      - sqlserver
+    ports:
+      - "5000:8080"
+    networks:
+      - app-network
+
+networks:
+  app-network:
